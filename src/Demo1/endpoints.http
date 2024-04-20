@@ -1,0 +1,30 @@
+﻿### Create a policy
+POST https://localhost:7281/policies
+Content-Type: application/json
+
+{
+  "policyNumber" : "PL123456",
+  "policyHolder" : "Kevin Smith",
+  "premium": {{$random.integer()}}
+}
+
+###
+
+### Get policies with filter
+GET https://localhost:7281/policies?policyNumber=PL123456
+
+###
+
+### Get single policy
+GET https://localhost:7281/policies/9373febb-5980-40aa-8f35-985171eb070d
+
+###
+
+### Create a claim for a policy
+POST https://localhost:7281/policies/9373febb-5980-40aa-8f35-985171eb070d/claims
+Content-Type: application/json
+
+{
+  "amount" : 199.22,
+  "description" : "Water leak in the kitchen"
+}
