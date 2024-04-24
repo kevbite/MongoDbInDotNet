@@ -1,6 +1,7 @@
 using Demo2.Models;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Conventions;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 
@@ -9,19 +10,41 @@ BsonDefaults.GuidRepresentation = GuidRepresentation.Standard;
 BsonDefaults.GuidRepresentationMode = GuidRepresentationMode.V3;
 BsonSerializer.RegisterSerializer(GuidSerializer.StandardInstance);
 #pragma warning restore CS0618
+
+// var pack = new ConventionPack
+// {
+//     new CamelCaseElementNameConvention(),
+//     new EnumRepresentationConvention(BsonType.String)
+// };
+//
+// ConventionRegistry.Register(
+//     "My Custom Conventions",
+//     pack,
+//     t => t.FullName?.StartsWith("Demo2.") == true);
 //
 // BsonClassMap.RegisterClassMap<Policy>(map =>
 // {
 //     map.AutoMap();
+//     map.MapProperty(x => x.PolicyHolder)
+//         .SetElementName("holder");
+// });
+//
+// BsonClassMap.RegisterClassMap<Claim>(map =>
+// {
+//     map.AutoMap();
+//     map.MapProperty(x => x.Amount)
+//         .SetSerializer(new Decimal128Serializer(BsonType.Decimal128));
 // });
 
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSingleton(_
-    => new MongoClient("mongodb://localhost:27017"));
+    => new MongoClient("mongodb://localhost:27017?appname=Demo2"));
+
 builder.Services.AddScoped<IMongoDatabase>(provider =>
     provider.GetRequiredService<MongoClient>()
         .GetDatabase("insurance-demo2"));
+
 builder.Services.AddScoped<IMongoCollection<Policy>>(provider =>
     provider.GetRequiredService<IMongoDatabase>()
         .GetCollection<Policy>("policies"));
@@ -35,8 +58,7 @@ var group = app.MapGroup("/policies");
 group.MapPost("/", async (Policy policy, IMongoCollection<Policy> collection) =>
 {
     policy = policy with { Id = Guid.NewGuid() };
-    await collection.InsertOneAsync(policy);
-
+    
     return TypedResults.Ok(policy);
 });
 
