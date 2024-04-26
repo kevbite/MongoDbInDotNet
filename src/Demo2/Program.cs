@@ -1,7 +1,6 @@
 using Demo2.Models;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
-using MongoDB.Bson.Serialization.Conventions;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 
@@ -39,7 +38,7 @@ BsonSerializer.RegisterSerializer(GuidSerializer.StandardInstance);
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSingleton(_
-    => new MongoClient("mongodb://localhost:27017?appname=Demo2"));
+    => new MongoClient("mongodb+srv://leedssharp:X7N8IDTJou96tetg@cluster0.adp3smg.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0&appname=Demo2"));
 
 builder.Services.AddScoped<IMongoDatabase>(provider =>
     provider.GetRequiredService<MongoClient>()
@@ -58,6 +57,8 @@ var group = app.MapGroup("/policies");
 group.MapPost("/", async (Policy policy, IMongoCollection<Policy> collection) =>
 {
     policy = policy with { Id = Guid.NewGuid() };
+
+    await collection.InsertOneAsync(policy);
     
     return TypedResults.Ok(policy);
 });

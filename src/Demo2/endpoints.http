@@ -3,7 +3,7 @@ POST https://localhost:7239/policies
 Content-Type: application/json
 
 {
-  "policyNumber" : "PL123456",
+  "policyNumber" : "PL112{{$random.integer()}}",
   "policyHolder" : "Kevin Smith",
   "premium": {{$random.integer()}}
 }
@@ -11,7 +11,7 @@ Content-Type: application/json
 ###
 
 ### Get policies with filter
-GET https://localhost:7239/policies?policyNumber=PL123456
+GET https://localhost:7239/policies?policyNumber=PL112714
 
 ###
 
