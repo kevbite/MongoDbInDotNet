@@ -6,9 +6,9 @@ using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 
 #pragma warning disable CS0618
-BsonDefaults.GuidRepresentation = GuidRepresentation.Standard;
-BsonDefaults.GuidRepresentationMode = GuidRepresentationMode.V3;
-BsonSerializer.RegisterSerializer(GuidSerializer.StandardInstance);
+// BsonDefaults.GuidRepresentation = GuidRepresentation.Standard;
+// BsonDefaults.GuidRepresentationMode = GuidRepresentationMode.V3;
+// BsonSerializer.RegisterSerializer(GuidSerializer.StandardInstance);
 #pragma warning restore CS0618
 //
 // var pack = new ConventionPack
