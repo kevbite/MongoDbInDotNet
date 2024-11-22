@@ -2,7 +2,8 @@ using Demo1.Models;
 using Microsoft.EntityFrameworkCore;
 using MongoDB.Driver;
 
-var mongoClient = new MongoClient("mongodb://localhost:27017");
+var mongoClient = 
+    new MongoClient("mongodb://localhost:27017");
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -15,7 +16,8 @@ var app = builder.Build();
 
 var group = app.MapGroup("/policies");
 
-group.MapPost("/", async (Policy policy, InsuranceDbContext context) =>
+group.MapPost("/", async (Policy policy, 
+    InsuranceDbContext context) =>
 {
     policy = policy with { Id = Guid.NewGuid() };
     context.Policies.Add(policy);
@@ -25,17 +27,20 @@ group.MapPost("/", async (Policy policy, InsuranceDbContext context) =>
     return TypedResults.Ok(policy);
 });
 
-group.MapGet("/", async (InsuranceDbContext context, string? policyNumber) =>
+group.MapGet("/", async (InsuranceDbContext context,
+    string? policyNumber) =>
 {
     var policies =
         policyNumber is { Length: > 0 }
-            ? context.Policies.Where(x => x.PolicyNumber == policyNumber)
+            ? context.Policies
+                .Where(x => x.PolicyNumber == policyNumber)
             : context.Policies;
 
     return TypedResults.Ok(await policies.ToListAsync());
 });
 
-group.MapGet("/{policyId:guid}", async (Guid policyId, InsuranceDbContext context) =>
+group.MapGet("/{policyId:guid}", async (Guid policyId,
+    InsuranceDbContext context) =>
 {
     var policy = await context.Policies
         .Where(x => x.Id == policyId)
@@ -44,7 +49,9 @@ group.MapGet("/{policyId:guid}", async (Guid policyId, InsuranceDbContext contex
     return policy is null ? Results.NotFound() : Results.Ok(policy);
 });
 
-group.MapPost("/{policyId:guid}/claims", async (Guid policyId, Claim claim, InsuranceDbContext context) =>
+group.MapPost("/{policyId:guid}/claims",
+    async (Guid policyId, 
+    Claim claim, InsuranceDbContext context) =>
 {
     var policy = await context.Policies
         .Where(x => x.Id == policyId)

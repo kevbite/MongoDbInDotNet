@@ -11,17 +11,17 @@ Content-Type: application/json
 ###
 
 ### Get policies with filter
-GET https://localhost:7239/policies?policyNumber=PL112714
+GET https://localhost:7239/policies?policyNumber=PL112168
 
 ###
 
 ### Get single policy
-GET https://localhost:7239/policies/f45979c8-8b65-4927-a4ea-97d2122eee29
+GET https://localhost:7239/policies/bd5d6ec8-1540-4cc0-a7c1-191ebb92c81c
 
 ###
 
 ### Create a claim for a policy
-POST https://localhost:7239/policies/f45979c8-8b62-4927-a4ea-97d2122eee29/claims
+POST https://localhost:7239/policies/bd5d6ec8-1540-4cc0-a7c1-191ebb92c81c/claims
 Content-Type: application/json
 
 {

@@ -1,6 +1,7 @@
 using Demo2.Models;
 using MongoDB.Bson;
 using MongoDB.Bson.Serialization;
+using MongoDB.Bson.Serialization.Conventions;
 using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Driver;
 
@@ -9,7 +10,7 @@ BsonDefaults.GuidRepresentation = GuidRepresentation.Standard;
 BsonDefaults.GuidRepresentationMode = GuidRepresentationMode.V3;
 BsonSerializer.RegisterSerializer(GuidSerializer.StandardInstance);
 #pragma warning restore CS0618
-
+//
 // var pack = new ConventionPack
 // {
 //     new CamelCaseElementNameConvention(),
@@ -20,7 +21,7 @@ BsonSerializer.RegisterSerializer(GuidSerializer.StandardInstance);
 //     "My Custom Conventions",
 //     pack,
 //     t => t.FullName?.StartsWith("Demo2.") == true);
-//
+
 // BsonClassMap.RegisterClassMap<Policy>(map =>
 // {
 //     map.AutoMap();
@@ -35,10 +36,12 @@ BsonSerializer.RegisterSerializer(GuidSerializer.StandardInstance);
 //         .SetSerializer(new Decimal128Serializer(BsonType.Decimal128));
 // });
 
+var connectionString = "mongodb://localhost:27017";
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddSingleton(_
-    => new MongoClient("mongodb+srv://leedssharp:X7N8IDTJou96tetg@cluster0.adp3smg.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0&appname=Demo2"));
+    => new MongoClient(
+        connectionString));
 
 builder.Services.AddScoped<IMongoDatabase>(provider =>
     provider.GetRequiredService<MongoClient>()
@@ -54,7 +57,8 @@ var app = builder.Build();
 
 var group = app.MapGroup("/policies");
 
-group.MapPost("/", async (Policy policy, IMongoCollection<Policy> collection) =>
+group.MapPost("/", async (Policy policy,
+    IMongoCollection<Policy> collection) =>
 {
     policy = policy with { Id = Guid.NewGuid() };
 
@@ -63,7 +67,8 @@ group.MapPost("/", async (Policy policy, IMongoCollection<Policy> collection) =>
     return TypedResults.Ok(policy);
 });
 
-group.MapGet("/", async (string? policyNumber, IMongoCollection<Policy> collection) =>
+group.MapGet("/", async (string? policyNumber,
+    IMongoCollection<Policy> collection) =>
 {
     var aggregateFluent = collection.Aggregate();
     if (policyNumber is { Length: > 0 })
@@ -74,7 +79,8 @@ group.MapGet("/", async (string? policyNumber, IMongoCollection<Policy> collecti
     return TypedResults.Ok(await aggregateFluent.ToListAsync());
 });
 
-group.MapGet("/{policyId:guid}", async (Guid policyId, IMongoCollection<Policy> collection) =>
+group.MapGet("/{policyId:guid}", async (Guid policyId, 
+    IMongoCollection<Policy> collection) =>
 {
     var policy = await collection.Find(x => x.Id == policyId)
         .FirstOrDefaultAsync();
@@ -82,11 +88,13 @@ group.MapGet("/{policyId:guid}", async (Guid policyId, IMongoCollection<Policy> 
     return policy is null ? Results.NotFound() : Results.Ok(policy);
 });
 
-group.MapPost("/{policyId:guid}/claims", async (Guid policyId, Claim claim, IMongoCollection<Policy> collection) =>
+group.MapPost("/{policyId:guid}/claims", async (Guid policyId,
+    Claim claim, IMongoCollection<Policy> collection) =>
 {
     claim = claim with { Id = Guid.NewGuid() };
 
-    var result = await collection.UpdateOneAsync(x => x.Id == policyId,
+    var result = await collection.UpdateOneAsync(
+        x => x.Id == policyId,
         Builders<Policy>.Update.Push(x => x.Claims, claim));
 
     if (result is { MatchedCount: 0 })

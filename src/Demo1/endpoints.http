@@ -1,9 +1,10 @@
 ﻿### Create a policy
+# @name postPolicies
 POST https://localhost:7281/policies
 Content-Type: application/json
 
 {
-  "policyNumber" : "PL123456",
+  "policyNumber" : "PL12345{{$random.integer()}}",
   "policyHolder" : "Kevin Smith",
   "premium": {{$random.integer()}}
 }
@@ -11,17 +12,17 @@ Content-Type: application/json
 ###
 
 ### Get policies with filter
-GET https://localhost:7281/policies?policyNumber=PL123456
+GET https://localhost:7281/policies?policyNumber=PL12345385
 
 ###
 
 ### Get single policy
-GET https://localhost:7281/policies/9373febb-5980-40aa-8f35-985171eb070d
+GET https://localhost:7281/policies/d74ca913-9a07-4c08-b4c8-f25dcafdac81
 
 ###
 
 ### Create a claim for a policy
-POST https://localhost:7281/policies/9373febb-5980-40aa-8f35-985171eb070d/claims
+POST https://localhost:7281/policies/d74ca913-9a07-4c08-b4c8-f25dcafdac81/claims
 Content-Type: application/json
 
 {
